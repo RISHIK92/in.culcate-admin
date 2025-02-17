@@ -9,13 +9,15 @@ import { Dashboard } from './pages/dashboard'
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Navigate to="/signin" replace />} />
-        <Route path='/signup' element={<Signup />}/>
-        <Route path='/signin' element={<Signin />}/>
-        <Route path='/dashboard' element={<Dashboard />}/>
-        <Route path="*" element={<Navigate to="/signin" replace />} />
-      </Routes>
+      <div className="app-container">
+        <Routes>
+          <Route path="/" element={<Navigate to="/signin" replace />} />
+          <Route path='/signup' element={<Signup />}/>
+          <Route path='/signin' element={<Signin />}/>
+          <Route path='/dashboard' element={<Dashboard />}/>
+          <Route path="*" element={<Navigate to="/signin" replace />} />
+        </Routes>
+      </div>
     </BrowserRouter>
   )
 }
