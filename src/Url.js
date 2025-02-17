@@ -1,0 +1,1 @@
+export const BACKEND_URL = "https://admin-backend-fc1z.onrender.com/api/admin/v1/"
