@@ -38,6 +38,23 @@ export const ArticlePage = () => {
     const fileInputRef = useRef(null);
     const longFileInputRef = useRef(null);
     const token = localStorage.getItem("authToken");
+    const [categories, setCategories] = useState([]);
+    async function fetchCategories() {
+        try {
+            const response = await axios.get(`${BACKEND_URL}home_page`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            console.log(response.data.categories);
+
+            setCategories(response.data.categories);
+        } catch (error) {
+            console.error("Error fetching categories:", error);
+            // Optionally, show a message to the user about the error
+        }
+    }
+    
 
     // Message handling
     const showMessage = (msg, duration = 1800) => {
@@ -196,6 +213,7 @@ const handleDelete = async (articleId) => {
     
 
     const toggleAddArticle = () => {
+        fetchCategories();
         setUiState(prev => ({
             ...prev,
             showAddArticle: !prev.showAddArticle
@@ -329,32 +347,41 @@ const handleDelete = async (articleId) => {
                 </div>
     
                 {/* Category ID */}
-                <div>
-                    <label className="text-black">Category ID</label>
-                    <input
-                        type="number"
-                        className="bg-gray-300 h-10 w-full rounded-lg px-3 focus:outline-custom-orange"
-                        placeholder="Enter category ID"
-                        value={articleForm.categoryId}
-                        onChange={(e) => handleFormChange("categoryId", e.target.value)}
-                    />
+                <div className="flex space-x-4">
+                    {/* Category Select */}
+                    <div className="w-1/2">
+                        <label className="text-black">Category</label>
+                        <select
+                            className="bg-gray-300 h-10 w-full rounded-lg px-3 focus:outline-custom-orange"
+                            value={articleForm.categoryId}
+                            onChange={(e) => handleFormChange("categoryId", e.target.value)}
+                        >
+                            <option value="">Select Category</option>
+                            {categories.map((category) => (
+                                <option key={category.id} value={category.id}>
+                                    {category.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Tags Input */}
+                    <div className="w-1/2">
+                        <label className="text-black">Tags (comma-separated)</label>
+                        <input
+                            className="bg-gray-300 h-10 w-full rounded-lg px-3 focus:outline-custom-orange"
+                            placeholder="e.g. tech, science"
+                            value={articleForm.tags.join(", ")} // Join array to display tags as a comma-separated string
+                            onChange={(e) =>
+                                handleFormChange("tags", e.target.value.split(",").map(tag => tag.trim()))
+                            }
+                        />
+                    </div>
                 </div>
-    
-                {/* Tags */}
-                <div>
-                    <label className="text-black">Tags (comma-separated)</label>
-                    <input
-                        className="bg-gray-300 h-10 w-full rounded-lg px-3 focus:outline-custom-orange"
-                        placeholder="e.g. tech, science"
-                        value={articleForm.tags}
-                        onChange={(e) =>
-                            handleFormChange("tags", e.target.value.split(",").map(tag => tag.trim()))
-                        }
-                    />
-                </div>
+
     
                 {/* Submit Button */}
-                <div className="flex justify-end mt-2">
+                <div className="bottom-4 flex justify-end mt-2">
                     <Button
                         variant="primary"
                         text={uiState.uploading ? "Uploading..." : "Save Article"}
