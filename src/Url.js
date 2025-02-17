@@ -1,1 +1,1 @@
-export const BACKEND_URL = "https://admin.error6o6.tech"
+export const BACKEND_URL = "https://admin.error6o6.tech/api/admin/v1/"
