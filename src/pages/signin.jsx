@@ -13,10 +13,10 @@ export function Signin() {
                     <p className="text-4xl ml-[128px] font-semibold text-[#FF6A34] leading-none">Rediscovering Bharat.</p>
                 </div>
                 <div className="absolute bottom-0 left-0">
-                    <img src="src/icons/Vector.png" alt="Vector 1" />
+                    <img src="https://res.cloudinary.com/dvweoxpun/image/upload/v1739790566/Vector_me1sxx.png" alt="Vector 1" />
                 </div>
                 <div className="absolute top-0 right-0 mr-10">
-                    <img src="src/icons/Vector2.png" alt="Vector 2" />
+                    <img src="https://res.cloudinary.com/dvweoxpun/image/upload/v1739790580/Vector2_fptoa7.png" alt="Vector 2" />
                 </div>
             </div>
             <div className="w-[300px] bg-white shadow-lg">
