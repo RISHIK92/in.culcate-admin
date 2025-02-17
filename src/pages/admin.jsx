@@ -29,7 +29,7 @@ export function AdminPage() {
     };
 
     const handleDelete = async (adminid) => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this article?");
+        const confirmDelete = window.confirm("Are you sure you want to delete this Admin?");
         if (!confirmDelete) return;
         try {
             await axios.delete(`${BACKEND_URL}admin/admin_delete/${adminid}`, {

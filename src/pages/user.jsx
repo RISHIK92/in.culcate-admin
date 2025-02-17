@@ -29,7 +29,7 @@ export function UserPage() {
     };
 
     const handleDelete = async (userid) => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this article?");
+        const confirmDelete = window.confirm("Are you sure you want to delete this User?");
         if (!confirmDelete) return;
         try {
             await axios.delete(`${BACKEND_URL}consumer/consumer_delete/${userid}`, {

@@ -29,7 +29,7 @@ export function CreatorPage() {
     };
 
     const handleDelete = async (creatorId) => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this article?");
+        const confirmDelete = window.confirm("Are you sure you want to delete this Content Creator?");
         if (!confirmDelete) return;
         const token = localStorage.getItem("authToken"); // Fetch token inside the function
 
