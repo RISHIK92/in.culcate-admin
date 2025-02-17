@@ -52,7 +52,7 @@ export function AdminPage() {
                             <p className="ml-6">
                                 <span className="text-[#151445]">Admin List</span>
                             </p>
-                            <Button variant="primary" text="Add Admin" size="custom" onClick={() => setShowAddAdmin(true)} />
+                            <Button variant="primary" text={showAddAdmin ? "Close" : "Add Admin"} size="custom" onClick={() => setShowAddAdmin(prev => !prev)} />
                         </div>
                         <hr className="mt-4 border m-8"></hr>
                     </div>

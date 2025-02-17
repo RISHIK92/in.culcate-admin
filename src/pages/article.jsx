@@ -8,6 +8,8 @@ import { List } from "../icons/list";
 import { Grid } from "../icons/grid";
 import { BACKEND_URL } from "../Url";
 import { useCallback } from "react";
+import { Search } from "../components/search";
+import { SearchIcon } from "../icons/search";
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; 
 const ALLOWED_FILE_TYPES = ["image/jpeg", "image/png", "image/jpg"];
@@ -31,14 +33,17 @@ export const ArticlePage = () => {
         uploading: false,
         message: "",
         showAddArticle: false,
-        viewMode: "grid"
+        viewMode: "grid",
+        searchQuery: ""
     });
 
     const [articles, setArticles] = useState([]);
+    const [filteredArticles, setFilteredArticles] = useState([]);
     const fileInputRef = useRef(null);
     const longFileInputRef = useRef(null);
     const token = localStorage.getItem("authToken");
     const [categories, setCategories] = useState([]);
+
     async function fetchCategories() {
         try {
             const response = await axios.get(`${BACKEND_URL}home_page`, {
@@ -46,23 +51,17 @@ export const ArticlePage = () => {
                     Authorization: `Bearer ${token}`
                 }
             });
-            console.log(response.data.categories);
-
             setCategories(response.data.categories);
         } catch (error) {
             console.error("Error fetching categories:", error);
-            // Optionally, show a message to the user about the error
         }
     }
-    
 
-    // Message handling
     const showMessage = (msg, duration = 1800) => {
         setUiState(prev => ({ ...prev, message: msg }));
         setTimeout(() => setUiState(prev => ({ ...prev, message: "" })), duration);
     };
 
-    // File handling
     const validateFile = (file) => {
         if (!file) return false;
         if (!ALLOWED_FILE_TYPES.includes(file.type)) {
@@ -98,7 +97,6 @@ export const ArticlePage = () => {
         reader.readAsDataURL(file);
     }, []);
 
-    // Form handling
     const handleFormChange = (field, value) => {
         setArticleForm(prev => ({
             ...prev,
@@ -118,9 +116,7 @@ export const ArticlePage = () => {
         }
         return true;
     };
-    
 
-    // API calls
     const handleSubmit = async () => {
         if (!validateForm()) return;
 
@@ -135,7 +131,6 @@ export const ArticlePage = () => {
         formData.append("authorId", articleForm.authorId);
         formData.append("categoryId", articleForm.categoryId);
         formData.append("tags", JSON.stringify(articleForm.tags));
-
 
         try {
             await axios.post(
@@ -158,7 +153,7 @@ export const ArticlePage = () => {
             setUiState(prev => ({ ...prev, uploading: false }));
         }
     };
-    
+
     const fetchArticles = async () => {
         try {
             const response = await axios.get(`${BACKEND_URL}article/get_all_the_Article`, {
@@ -166,35 +161,50 @@ export const ArticlePage = () => {
             });
     
             if (response.status === 200) {
-                setArticles(response.data.knowledge_capsules || []);
+                const articles = response.data.knowledge_capsules || [];
+                setArticles(articles);
+                handleSearch(uiState.searchQuery, articles);
             } else {
                 showMessage("Failed to load articles.");
             }
         } catch (error) {
-            console.error("Error fetching articles:", error.response?.data || error.message);
+            console.error("Error fetching articles:", error);
             showMessage("Error loading articles. Please check your network.");
         }
     };
-    
 
-const handleDelete = async (articleId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this article?");
-    if (!confirmDelete) return;
+    const handleDelete = async (articleId) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this article?");
+        if (!confirmDelete) return;
 
-    try {
-        await axios.delete(`${BACKEND_URL}article/delete_article/${articleId}`, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        fetchArticles();
-        showMessage("Article deleted successfully!");
-    } catch (error) {
-        console.error("Delete error:", error);
-        showMessage("Error deleting article.");
-    }
-};
+        try {
+            await axios.delete(`${BACKEND_URL}article/delete_article/${articleId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            fetchArticles();
+            showMessage("Article deleted successfully!");
+        } catch (error) {
+            console.error("Delete error:", error);
+            showMessage("Error deleting article.");
+        }
+    };
 
+    const handleSearch = (query, articleList = articles) => {
+        setUiState(prev => ({ ...prev, searchQuery: query }));
+        
+        if (!query.trim()) {
+            setFilteredArticles(articleList);
+            return;
+        }
 
-    // UI helpers
+        const searchResults = articleList.filter(article => 
+            article.Short_title.toLowerCase().includes(query.toLowerCase()) ||
+            article.Short_content.toLowerCase().includes(query.toLowerCase())
+        );
+        
+        setFilteredArticles(searchResults);
+    };
+
     const resetForm = () => {
         setArticleForm({
             file: null,
@@ -210,14 +220,19 @@ const handleDelete = async (articleId) => {
             tags: []
         });
     };
-    
 
     const toggleAddArticle = () => {
-        fetchCategories();
-        setUiState(prev => ({
-            ...prev,
-            showAddArticle: !prev.showAddArticle
-        }));
+        setUiState(prev => {
+            const newShowAddArticle = !prev.showAddArticle;
+            if (newShowAddArticle) {
+                fetchCategories();
+            }
+            return {
+                ...prev,
+                showAddArticle: newShowAddArticle
+            };
+        });
+    
         if (!uiState.showAddArticle) {
             resetForm();
         }
@@ -234,37 +249,34 @@ const handleDelete = async (articleId) => {
         fetchArticles();
     }, []);
 
-    // Render helper components
     const renderArticleForm = () => (
         <div className="mt-6">
-            {/* Short Image Upload */}
-        <div className="flex">
-            <div className="flex justify-center mt-4 ml-36 mr-36">
-                <div
-                    onClick={() => fileInputRef.current?.click()}
-                    className="h-40 w-80 bg-gray-300 rounded-xl opacity-40 flex flex-col justify-center items-center cursor-pointer relative"
-                >
-                    {articleForm.imageSrc ? (
-                        <img
-                            src={articleForm.imageSrc}
-                            alt="Preview"
-                            className="h-full w-full rounded-xl object-cover"
-                        />
-                    ) : (
-                        <p className="text-black">Upload Short Image</p>
-                    )}
+            <div className="flex">
+                <div className="flex justify-center mt-4 ml-36 mr-36">
+                    <div
+                        onClick={() => fileInputRef.current?.click()}
+                        className="h-40 w-80 bg-gray-300 rounded-xl opacity-40 flex flex-col justify-center items-center cursor-pointer relative"
+                    >
+                        {articleForm.imageSrc ? (
+                            <img
+                                src={articleForm.imageSrc}
+                                alt="Preview"
+                                className="h-full w-full rounded-xl object-cover"
+                            />
+                        ) : (
+                            <p className="text-black">Upload Short Image</p>
+                        )}
+                    </div>
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        className="hidden"
+                        onChange={handleFileSelect}
+                        accept="image/*"
+                    />
                 </div>
-                <input
-                    ref={fileInputRef}
-                    type="file"
-                    className="hidden"
-                    onChange={handleFileSelect}
-                    accept="image/*"
-                />
-            </div>
 
-                            {/* Long Image Upload */}
-                            <div className="flex justify-center mt-4">
+                <div className="flex justify-center mt-4">
                     <div
                         onClick={() => longFileInputRef.current?.click()}
                         className="h-40 w-80 bg-gray-300 rounded-xl opacity-40 flex flex-col justify-center items-center cursor-pointer relative"
@@ -288,9 +300,8 @@ const handleDelete = async (articleId) => {
                     />
                 </div>
             </div>
-            {/* Form Fields */}
+
             <div className="space-y-4 mx-8 mt-4">
-                {/* Short Title */}
                 <div>
                     <label className="text-black">Short Title</label>
                     <input
@@ -300,8 +311,7 @@ const handleDelete = async (articleId) => {
                         onChange={(e) => handleFormChange("shortTitle", e.target.value)}
                     />
                 </div>
-    
-                {/* Short Description */}
+
                 <div>
                     <label className="text-black">Short Description</label>
                     <WordCounter
@@ -311,8 +321,7 @@ const handleDelete = async (articleId) => {
                         onChange={(e) => handleFormChange("shortDescription", e.target.value)}
                     />
                 </div>
-    
-                {/* Long Title */}
+
                 <div>
                     <label className="text-black">Long Title</label>
                     <input
@@ -322,8 +331,7 @@ const handleDelete = async (articleId) => {
                         onChange={(e) => handleFormChange("longTitle", e.target.value)}
                     />
                 </div>
-    
-                {/* Long Description */}
+
                 <div>
                     <label className="text-black">Long Description</label>
                     <WordCounter
@@ -333,8 +341,7 @@ const handleDelete = async (articleId) => {
                         onChange={(e) => handleFormChange("longDescription", e.target.value)}
                     />
                 </div>
-    
-                {/* Author ID */}
+
                 <div>
                     <label className="text-black">Author ID</label>
                     <input
@@ -345,10 +352,8 @@ const handleDelete = async (articleId) => {
                         onChange={(e) => handleFormChange("authorId", e.target.value)}
                     />
                 </div>
-    
-                {/* Category ID */}
+
                 <div className="flex space-x-4">
-                    {/* Category Select */}
                     <div className="w-1/2">
                         <label className="text-black">Category</label>
                         <select
@@ -365,13 +370,12 @@ const handleDelete = async (articleId) => {
                         </select>
                     </div>
 
-                    {/* Tags Input */}
                     <div className="w-1/2">
                         <label className="text-black">Tags (comma-separated)</label>
                         <input
                             className="bg-gray-300 h-10 w-full rounded-lg px-3 focus:outline-custom-orange"
                             placeholder="e.g. tech, science"
-                            value={articleForm.tags.join(", ")} // Join array to display tags as a comma-separated string
+                            value={articleForm.tags.join(", ")}
                             onChange={(e) =>
                                 handleFormChange("tags", e.target.value.split(",").map(tag => tag.trim()))
                             }
@@ -379,8 +383,6 @@ const handleDelete = async (articleId) => {
                     </div>
                 </div>
 
-    
-                {/* Submit Button */}
                 <div className="bottom-4 flex justify-end mt-2">
                     <Button
                         variant="primary"
@@ -393,11 +395,10 @@ const handleDelete = async (articleId) => {
             </div>
         </div>
     );
-    
 
     const renderArticleGrid = () => (
         <div className="grid grid-cols-3 gap-4">
-            {articles.map((article) => (
+            {filteredArticles.map((article) => (
                 <div key={article.id} className="bg-white rounded-lg shadow-lg overflow-hidden relative">
                     <img
                         src={article.Short_image}
@@ -418,6 +419,7 @@ const handleDelete = async (articleId) => {
             ))}
         </div>
     );
+
 
     const renderArticleList = () => (
         <div className="flex flex-col gap-4">
@@ -443,7 +445,15 @@ const handleDelete = async (articleId) => {
                     </p>
                 </div>
 
-                <div className="absolute flex justify-end w-full mt-4 px-6">
+                <div className="absolute flex justify-between w-full mt-4 px-6">
+                    <div className="flex items-center">
+                        {!uiState.showAddArticle && (
+                            <div className="relative">
+                                <Search image={<SearchIcon className="w-3 h-3 text-gray-400" />} className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-custom-orange w-64" type="text" size={20} placeholder="Search articles..." value={uiState.searchQuery} onChange={(e) => handleSearch(e.target.value)} />
+                            </div>
+                        )}
+                    </div>
+                    
                     <div className="flex items-center gap-3">
                         {!uiState.showAddArticle && (
                             <Button

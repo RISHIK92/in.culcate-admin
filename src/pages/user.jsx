@@ -52,7 +52,8 @@ export function UserPage() {
                             <p className="ml-6">
                                 <span className="text-[#151445]">User List</span>
                             </p>
-                            <Button variant="primary" text="Add User" size="custom" onClick={() => setShowAddUser(true)} />
+                            <Button variant="primary" text={showAddUser ? "Close" : "Add User"} size="custom" onClick={() => setShowAddUser(prev => !prev)} />
+
                         </div>
                         <hr className="mt-4 border m-8"></hr>
                     </div>

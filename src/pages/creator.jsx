@@ -56,9 +56,9 @@ export function CreatorPage() {
                             </p>
                             <Button
                                 variant="primary"
-                                text="Add Creator"
+                                text={showAddCreator? "Close": "Add Creator"}
                                 size="custom"
-                                onClick={() => setShowAddCreator(true)}
+                                onClick={() => setShowAddCreator(prev => !prev)}
                             />
                         </div>
                         <hr className="mt-4 border m-8" />

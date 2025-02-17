@@ -2,6 +2,7 @@ import React from "react";
 import { SidebarSignin } from "../components/sidebarSignin";
 
 export function Signin() {
+    localStorage.removeItem('authToken')
     return (
         <div className="bg-[#fff5ef] h-screen flex">
             <div className="flex-1 relative">
