@@ -4,6 +4,7 @@ import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { Add } from "../components/add";
 import { BACKEND_URL } from "../Url";
+import { GroupIcon } from "../icons/grounIcon";
 
 export function CreatorPage() {
     const [showAddCreator, setShowAddCreator] = useState(false);
@@ -73,7 +74,7 @@ export function CreatorPage() {
                             {creators.map((creator) => (
                                 <Card
                                     key={creator.id}
-                                    profileImage="src/icons/OIP.jpeg"
+                                    profileImage={<GroupIcon />}
                                     name={creator.name}
                                     email={creator.email}
                                     userid={creator.id}

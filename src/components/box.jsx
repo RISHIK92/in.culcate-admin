@@ -3,7 +3,7 @@ import { Users } from "../icons/users";
 
 export function Box({ Icon,color,text,heading,textColor }) {
     return (
-        <div className={`h-40 w-64 ${color} ${textColor} rounded-xl`}>
+        <div className={`h-44 w-72 ${color} ${textColor} rounded-xl`}>
             <div className="mt-4 ml-3">
                 <Icon className="w-10 h-10" />
             </div>

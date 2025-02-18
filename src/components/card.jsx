@@ -4,7 +4,11 @@ export function Card({ profileImage, name, email, number, userid, date, onClick,
     return (
         <div className={`grid grid-cols-7 gap-4 flex-none h-24 w-full bg-custom-light rounded-md items-center text-black ${className}`}>
             <div className="col-span-1 flex justify-center">
-                <img src={profileImage} alt="Profile" className="h-16 w-16 rounded-md object-cover border-2 border-white" />
+                {typeof profileImage === "string" ? (
+                    <img src={profileImage} alt="Profile" className="h-16 w-16 rounded-md object-cover border-2 border-white" />
+                ) : (
+                    <div className="h-16 w-16">{profileImage}</div>
+                )}
             </div>
 
             <div className="col-span-1 flex items-center text-black">

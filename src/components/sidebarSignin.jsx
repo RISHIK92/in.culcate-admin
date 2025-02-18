@@ -28,14 +28,19 @@ export function SidebarSignin() {
                 email,
                 password
             });
-
-            localStorage.setItem('authToken', response.data.token);
+        
+            // Store token on successful login
+            localStorage.setItem("authToken", response.data.token);
             navigate("/dashboard");
         } catch (err) {
-            setError(err.response?.data?.message || "Something went wrong. Please try again.");
+            if (err.response?.status === 401) {
+                setError("Username and Password doesn't match.");
+            } else {
+                setError(err.response?.data?.message || "Something went wrong. Please try again.");
+            }
         } finally {
             setLoading(false);
-        }
+        }        
     }
 
     return (

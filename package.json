@@ -17,6 +17,7 @@
     "@editorjs/paragraph": "^2.11.7",
     "axios": "^1.7.9",
     "editor.js": "^0.1.0",
+    "editorjs-html": "^4.0.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-markdown": "^9.0.3",

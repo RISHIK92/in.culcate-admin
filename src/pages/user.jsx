@@ -4,6 +4,7 @@ import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { Add } from "../components/add";
 import { BACKEND_URL } from "../Url";
+import { GroupIcon } from "../icons/grounIcon";
 
 export function UserPage() {
     const [showAddUser, setShowAddUser] = useState(false);
@@ -65,7 +66,7 @@ export function UserPage() {
                     ) : (
                         <div className="flex flex-col gap-4 ml-6 mr-6 max-h-[80vh] overflow-y-auto">
                             {users.map((user, index) => (
-                                <Card key={index} profileImage="src/icons/OIP.jpeg" name={user.name} email={user.email} userid={user.id} date={user.createdAt ? new Date(user.createdAt).toISOString().split('T')[0] : 'N/A'} onClick={() => handleDelete(user.id)}/>
+                                <Card key={index} profileImage={<GroupIcon />} name={user.name} email={user.email} userid={user.id} date={user.createdAt ? new Date(user.createdAt).toISOString().split('T')[0] : 'N/A'} onClick={() => handleDelete(user.id)}/>
                             ))}
                         </div>
                     )}

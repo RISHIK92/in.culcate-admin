@@ -22,6 +22,8 @@ export function Dashboard() {
     const [totalCreators, setTotalCreators] = useState(null);
     const [numArticles, setNumArticles] = useState(null);
     const [totalAdmin, setTotalAdmin] = useState(null);
+    const [totalCategories,setTotalCategories] = useState(null);
+    const [totalTags,setTotalTags] = useState(null);
 
 
     useEffect(() => {
@@ -38,6 +40,8 @@ export function Dashboard() {
             setNumArticles(response.data.knowledge_capsule_count);
             setTotalCreators(response.data.content_creator_count);
             setTotalAdmin(response.data.admin_count);
+            setTotalCategories(response.data.category_count);
+            setTotalTags(response.data.tag_count);
         })
         .catch(() => {
             console.error("Failed to fetch admin name.");
@@ -57,10 +61,12 @@ export function Dashboard() {
             default:
                 return (
                     <div className="flex flex-wrap gap-8 mt-24 ml-72 bg-white">
-                        <Box Icon={Users} color="bg-custom-light" text={totalUsers} heading="Total Users" />
-                        <Box Icon={Creator} color="bg-custom-orange" textColor="text-white" text={totalCreators} heading="Total Content Creators" />
-                        <Box Icon={Article} color="bg-custom-light" text={numArticles} heading="Number of Articles" />
+                        <Box Icon={Users} color="bg-custom-light" text={totalUsers} heading="Total Consumer" />
+                        <Box Icon={Creator} color="bg-custom-orange" textColor="text-white" text={totalCreators} heading="Total Content Creator" />
+                        <Box Icon={Article} color="bg-custom-light" text={numArticles} heading="Number of Knowledge Capsule" />
                         <Box Icon={Admin} color="bg-custom-orange" text={totalAdmin} textColor="text-white" heading="Total Admin" />
+                        <Box Icon={Admin} color="bg-custom-light" text={totalCategories} textColor="text-black" heading="Total Categories" />
+                        <Box Icon={Admin} color="bg-custom-orange" text={totalTags} textColor="text-white" heading="Total Tags" />
                         <div className="absolute right-4 top-3 flex items-center gap-4">
                             <div className="relative w-[140px] overflow-hidden transition-all duration-300 focus-within:w-64">
                                 <Search type="text" placeholder="Search..." image={<SearchIcon className="w-3 h-3 text-gray-400" />} />

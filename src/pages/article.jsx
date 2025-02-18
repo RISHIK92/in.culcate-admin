@@ -59,6 +59,7 @@ export const ArticlePage = () => {
     const editorInstance = useRef(null);
     const token = localStorage.getItem("authToken");
     const [categories, setCategories] = useState([]);
+    const [id,setId]  = useState("id");
 
     // Initialize Editor.js
     useEffect(() => {
@@ -83,6 +84,7 @@ export const ArticlePage = () => {
                 onChange: async () => {
                     const savedData = await editorInstance.current.save();
                     handleFormChange("longDescription", JSON.stringify(savedData));
+                    console.log(JSON.stringify(savedData.blocks[0].data.text));
                 }
             });
 
@@ -105,6 +107,7 @@ export const ArticlePage = () => {
                 }
             });
             setCategories(response.data.categories);
+            setId(response.data.id)
         } catch (error) {
             console.error("Error fetching categories:", error);
         }
@@ -181,7 +184,7 @@ export const ArticlePage = () => {
         formData.append("Long_title", articleForm.longTitle);
         formData.append("Long_content", articleForm.longDescription);
         formData.append("Long_image", articleForm.longFile);
-        formData.append("authorId", articleForm.authorId);
+        formData.append("authorId", id);
         formData.append("categoryId", articleForm.categoryId);
         formData.append("tags", JSON.stringify(articleForm.tags));
 
@@ -401,13 +404,7 @@ export const ArticlePage = () => {
 
                 <div>
                     <label className="text-black">Author ID</label>
-                    <input
-                        type="number"
-                        className="bg-gray-300 h-10 w-full rounded-lg px-3 focus:outline-custom-orange"
-                        placeholder="Enter author ID"
-                        value={articleForm.authorId}
-                        onChange={(e) => handleFormChange("authorId", e.target.value)}
-                    />
+                    <p>{id}</p>
                 </div>
 
                 <div className="flex space-x-4">
@@ -460,7 +457,7 @@ export const ArticlePage = () => {
     const handleArticleClick = (article) => {
         setSelectedArticle(article);
     };
-
+    console.log(selectedArticle);
     const handleBackToList = () => {
         setSelectedArticle(null);
     };
@@ -494,8 +491,7 @@ export const ArticlePage = () => {
                     <div className="mb-6">
                         <h3 className="text-xl font-semibold mb-2">Description</h3>
                         {selectedArticle.Long_content ? (
-                            // <div dangerouslySetInnerHTML={{ __html: selectedArticle.Long_content }} />
-                            <ArticleContent content={selectedArticle.Long_content} />
+                            <ArticleContent content={selectedArticle.Short_content} />
                         ) : (
                             <ArticleContent content={selectedArticle.Short_content} />
                         )}
@@ -515,8 +511,8 @@ export const ArticlePage = () => {
                     )}
                     
                     <div className="text-sm text-gray-500 mt-8">
-                        {selectedArticle.author && (
-                            <p>Author: {selectedArticle.author.name || `ID: ${selectedArticle.authorId}`}</p>
+                        {selectedArticle.id && (
+                            <p>{`ID: ${selectedArticle.id}`}</p>
                         )}
                         {selectedArticle.created_at && (
                             <p>Published: {new Date(selectedArticle.created_at).toLocaleDateString()}</p>

@@ -4,6 +4,7 @@ import { Button } from "../components/button";
 import { Card } from "../components/card";
 import { Add } from "../components/add";
 import { BACKEND_URL } from "../Url";
+import { GroupIcon } from "../icons/grounIcon";
 
 export function AdminPage() {
     const [showAddAdmin, setShowAddAdmin] = useState(false);
@@ -64,7 +65,7 @@ export function AdminPage() {
                     ) : (
                         <div className="flex flex-col gap-4 ml-6 mr-6 max-h-[80vh] overflow-y-auto">
                             {admins.map((admin) => (
-                                <Card key={admin.id} profileImage="src/icons/OIP.jpeg" name={admin.name} email={admin.email} userid={admin.id} date={admin.createdAt ? new Date(admin.createdAt).toISOString().split('T')[0] : 'N/A'} onClick={() => handleDelete(admin.id)}/>
+                                <Card key={admin.id} profileImage={<GroupIcon />} name={admin.name} email={admin.email} userid={admin.id} date={admin.createdAt ? new Date(admin.createdAt).toISOString().split('T')[0] : 'N/A'} onClick={() => handleDelete(admin.id)}/>
                             ))}
                         </div>
                     )}
