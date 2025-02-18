@@ -451,7 +451,6 @@ export const ArticlePage = () => {
             }
         }
         
-        // Page numbers
         for (let i = startPage; i <= endPage; i++) {
             pageNumbers.push(
                 <button 
@@ -464,7 +463,6 @@ export const ArticlePage = () => {
             );
         }
         
-        // Last page
         if (endPage < totalPages) {
             if (endPage < totalPages - 1) {
                 pageNumbers.push(<span key="ellipsis2" className="px-1">...</span>);
@@ -575,14 +573,14 @@ export const ArticlePage = () => {
                     />
                 </div>
 
-                <div>
+                {/* <div>
                     <label className="text-black">Author ID</label>
                     <input
                         className="bg-gray-300 h-10 w-full rounded-lg px-3 focus:outline-custom-orange cursor-not-allowed"
                         value={id}
                         disabled
                     />
-                </div>
+                </div> */}
 
                 <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
                     <div className="w-full md:w-1/2">
@@ -606,7 +604,7 @@ export const ArticlePage = () => {
                         <input
                             className="bg-gray-300 h-10 w-full rounded-lg px-3 focus:outline-custom-orange"
                             placeholder="e.g. tech, science"
-                            value={articleForm.tags.join(", ")} // Join array to display tags as a comma-separated string
+                            value={articleForm.tags.join(", ")}
                             onChange={(e) =>
                                 handleFormChange("tags", e.target.value.split(",").map(tag => tag.trim()))
                             }
@@ -621,7 +619,7 @@ export const ArticlePage = () => {
                 <div className="bottom-4 flex justify-end mt-2">
                     <Button
                         variant="primary"
-                        text={uiState.uploading ? "Uploading..." : "Upload Article"}
+                        text={uiState.uploading ? "Saving..." : "Save Article"}
                         size="md"
                         onClick={handleSubmit}
                         disabled={uiState.uploading}

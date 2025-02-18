@@ -50,7 +50,7 @@ export function Sidebar({ activeItem, setActiveItem }) {
             <div className="mt-64">
                 <SideBarItem icon={<Home />} text="Home" isActive={activeItem === "Home"} onClick={() => setActiveItem("Home")} />
                 <SideBarItem icon={<Article className="h-6 w-6" />} text="Article" isActive={activeItem === "Article"} onClick={() => setActiveItem("Article")} />
-                <SideBarItem icon={<Users className="h-6 w-6" />} text="Users" isActive={activeItem === "Users"} onClick={() => setActiveItem("Users")} />
+                <SideBarItem icon={<Users className="h-6 w-6" />} text="Consumers" isActive={activeItem === "Users"} onClick={() => setActiveItem("Users")} />
                 <SideBarItem icon={<Creator className="h-6 w-6" />} text="Content Creators" isActive={activeItem === "Creators"} onClick={() => setActiveItem("Creators")} />
                 <SideBarItem icon={<Admin className="h-6 w-6" />} text="Admin" isActive={activeItem === "Admin"} onClick={() => setActiveItem("Admin")} />
             </div>

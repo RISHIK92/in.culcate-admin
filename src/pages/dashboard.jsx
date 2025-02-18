@@ -61,12 +61,12 @@ export function Dashboard() {
             default:
                 return (
                     <div className="flex flex-wrap gap-8 mt-24 ml-72 bg-white">
-                        <Box Icon={Users} color="bg-custom-light" text={totalUsers} heading="Total Consumer" />
-                        <Box Icon={Creator} color="bg-custom-orange" textColor="text-white" text={totalCreators} heading="Total Content Creator" />
-                        <Box Icon={Article} color="bg-custom-light" text={numArticles} heading="Number of Knowledge Capsule" />
                         <Box Icon={Admin} color="bg-custom-orange" text={totalAdmin} textColor="text-white" heading="Total Admin" />
-                        <Box Icon={Admin} color="bg-custom-light" text={totalCategories} textColor="text-black" heading="Total Categories" />
-                        <Box Icon={Admin} color="bg-custom-orange" text={totalTags} textColor="text-white" heading="Total Tags" />
+                        <Box Icon={Creator} color="bg-custom-orange" textColor="text-white" text={totalCreators} heading="Total Content Creator" />
+                        <Box Icon={Users} color="bg-custom-orange" text={totalUsers} textColor="text-white" heading="Total Consumer" />
+                        <Box Icon={Article} color="bg-custom-light" text={numArticles} heading="Number of Knowledge Capsule" />
+                        <Box Icon={Article} color="bg-custom-light" text={totalTags} textColor="text-black" heading="Total Tags" />
+                        <Box Icon={Article} color="bg-custom-light" text={totalCategories} textColor="text-black" heading="Total Categories" />
                         <div className="absolute right-4 top-3 flex items-center gap-4">
                             <div className="relative w-[140px] overflow-hidden transition-all duration-300 focus-within:w-64">
                                 <Search type="text" placeholder="Search..." image={<SearchIcon className="w-3 h-3 text-gray-400" />} />
