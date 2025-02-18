@@ -73,7 +73,7 @@ export function UserPage() {
                     <div className="flex flex-col gap-4 ml-6 mr-6 max-h-[80vh] overflow-y-auto">
                         {users.length > 0 ? (
                             users.map((user, index) => (
-                                <Card key={index} profileImage={<GroupIcon />} name={user.name} email={user.email} userid={user.id} date={user.createdAt ? new Date(user.createdAt).toISOString().split('T')[0] : 'N/A'} onClick={() => handleDelete(user.id)} />
+                                <Card key={index} profileImage={<GroupIcon />} name={user.name} email={user.email} date={user.createdAt ? new Date(user.createdAt).toISOString().split('T')[0] : 'N/A'} onClick={() => handleDelete(user.id)} />
                             ))
                         ) : (
                             <p className="text-center text-gray-500 mt-6">No users found.</p>

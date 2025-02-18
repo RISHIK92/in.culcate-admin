@@ -67,16 +67,7 @@ export function Dashboard() {
                         <Box Icon={Article} color="bg-custom-light" text={numArticles} heading="Number of Knowledge Capsule" />
                         <Box Icon={Article} color="bg-custom-light" text={totalTags} textColor="text-black" heading="Total Tags" />
                         <Box Icon={Article} color="bg-custom-light" text={totalCategories} textColor="text-black" heading="Total Categories" />
-                        <div className="absolute right-4 top-3 flex items-center gap-4">
-                            <div className="relative w-[140px] overflow-hidden transition-all duration-300 focus-within:w-64">
-                                <Search type="text" placeholder="Search..." image={<SearchIcon className="w-3 h-3 text-gray-400" />} />
-                            </div>
-                                <button className="text-gray-400">
-                                    <Notification />
-                                </button>
-                        </div>
                     </div>
-                    
                 );
         }
     };

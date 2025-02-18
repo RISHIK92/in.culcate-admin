@@ -85,7 +85,6 @@ export function CreatorPage() {
                                     profileImage={<GroupIcon />}
                                     name={creator.name}
                                     email={creator.email}
-                                    userid={creator.id}
                                     date={creator.createdAt ? new Date(creator.createdAt).toISOString().split('T')[0] : 'N/A'}
                                     onClick={() => handleDelete(creator.id)}
                                 />

@@ -107,7 +107,7 @@ export const ArticlePage = () => {
                 editorInstance.current = null;
             }
         };
-    }, [uiState.showAddArticle, articleForm.longDescription]);
+    }, [uiState.showAddArticle]);
 
     const fetchCategories = useCallback(async () => {
         try {
@@ -554,7 +554,6 @@ export const ArticlePage = () => {
                         onChange={(e) => handleFormChange("shortDescription", e.target.value)}
                     />
                 </div>
-
                 <div>
                     <label className="text-black">Long Title</label>
                     <input
@@ -619,7 +618,7 @@ export const ArticlePage = () => {
                 <div className="bottom-4 flex justify-end mt-2">
                     <Button
                         variant="primary"
-                        text={uiState.uploading ? "Saving..." : "Save Article"}
+                        text={uiState.uploading ? "Saving..." : "Article"}
                         size="md"
                         onClick={handleSubmit}
                         disabled={uiState.uploading}
@@ -658,7 +657,7 @@ export const ArticlePage = () => {
                     <div className="mb-6">
                         <h3 className="text-xl font-semibold mb-2">Description</h3>
                         {selectedArticle.Long_content ? (
-                            <ArticleContent content={selectedArticle.Long_content} />
+                            <ArticleContent content={selectedArticle.Short_content} />
                         ) : (
                             <ArticleContent content={selectedArticle.Short_content} />
                         )}
@@ -676,15 +675,6 @@ export const ArticlePage = () => {
                             </div>
                         </div>
                     )}
-                    
-                    <div className="text-sm text-gray-500 mt-8">
-                        {selectedArticle.id && (
-                            <p>{`ID: ${selectedArticle.id}`}</p>
-                        )}
-                        {selectedArticle.created_at && (
-                            <p>Published: {new Date(selectedArticle.created_at).toLocaleDateString()}</p>
-                        )}
-                    </div>
                 </div>
             </div>
         );
@@ -789,14 +779,6 @@ export const ArticlePage = () => {
                     </div>
                     
                     <div className="flex items-center gap-3 justify-end">
-                        {!uiState.showAddArticle && !selectedArticle && (
-                            <Button
-                                variant="custom"
-                                text={uiState.viewMode === "grid" ? <ListFillter /> : <Grid />}
-                                size="md"
-                                onClick={toggleViewMode}
-                            />
-                        )}
                         
                         {!selectedArticle && (
                             <Button
