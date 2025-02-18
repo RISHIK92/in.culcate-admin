@@ -88,7 +88,7 @@ export function SidebarSignin() {
                     <div className="mt-6">
                         {loading ? (
                             <div className="flex justify-center">
-                                <div className="w-8 h-8 mt-4 border-4 border-t-4 border-[#FF6A34] border-solid rounded-full animate-spin"></div>
+                                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-custom-orange border-opacity-50"></div>
                             </div>
                         ) : (
                             <Button 

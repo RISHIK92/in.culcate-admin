@@ -36,7 +36,7 @@ export function Sidebar({ activeItem, setActiveItem }) {
     
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div className="animate-spin mt-80 ml-24 rounded-full h-12 w-12 border-t-4 border-custom-orange border-opacity-50"></div>;
     }
 
     return (
