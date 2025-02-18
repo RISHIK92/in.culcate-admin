@@ -42,7 +42,7 @@ export function Sidebar({ activeItem, setActiveItem }) {
     return (
         <div className="h-screen bg-[#FFD9C4] border-r w-64 fixed left-0 top-0 pl-6">
             <div className="text-md pt-4 ml-8 text-[#FF6A34]">
-                <p>Welcome Back</p>
+                {adminName !== "User not found" && <p>Welcome Back</p>}
                 <div className="text-black text-xl font-medium">
                     <p>{adminName}</p>
                 </div>

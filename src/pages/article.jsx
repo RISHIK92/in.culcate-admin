@@ -599,16 +599,16 @@ export const ArticlePage = () => {
                                 </option>
                             ))}
                         </select>
-                    </div>
+                </div>
 
-                    <div className="w-full md:w-1/2">
+                <div className="w-1/2">
                         <label className="text-black">Tags (comma-separated)</label>
                         <input
                             className="bg-gray-300 h-10 w-full rounded-lg px-3 focus:outline-custom-orange"
                             placeholder="e.g. tech, science"
-                            value={articleForm.tags.join(", ")}
+                            value={articleForm.tags.join(", ")} // Join array to display tags as a comma-separated string
                             onChange={(e) =>
-                                handleFormChange("tags", e.target.value.split(",").map(tag => tag.trim()).filter(tag => tag))
+                                handleFormChange("tags", e.target.value.split(",").map(tag => tag.trim()))
                             }
                         />
                     </div>
