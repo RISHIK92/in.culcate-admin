@@ -14,6 +14,16 @@ import EditorJS from '@editorjs/editorjs';
 import Header from '@editorjs/header';
 import List from '@editorjs/list';
 import Paragraph from '@editorjs/paragraph';
+import ReactMarkdown from "react-markdown";
+
+const ArticleContent = ({ content }) => {
+    return (
+        <div className="prose">
+            <ReactMarkdown>{content}</ReactMarkdown>
+        </div>
+    );
+};
+
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; 
 const ALLOWED_FILE_TYPES = ["image/jpeg", "image/png", "image/jpg"];
@@ -189,6 +199,7 @@ export const ArticlePage = () => {
             showMessage("Article submitted successfully!");
             fetchArticles();
             resetForm();
+            toggleAddArticle();
         } catch (error) {
             showMessage("Error submitting article. Please try again.");
             console.error("Submit error:", error);
@@ -429,79 +440,194 @@ export const ArticlePage = () => {
                     </div>
                 </div>
 
-                <div className="bottom-4 flex justify-end mt-2">
+                {uiState.message && (
+                    <p className="text-center text-red-600">{uiState.message}</p>
+                )}
+                {!uiState.message && (<div className="bottom-4 flex justify-end mt-2">
                     <Button
                         variant="primary"
-                        text={uiState.uploading ? "Uploading..." : "Save Article"}
+                        text={uiState.uploading ? "Uploading..." : "Upload Article"}
                         size="md"
                         onClick={handleSubmit}
                         disabled={uiState.uploading}
                     />
-                </div>
+                </div> )}
             </div>
         </div>
     );
+    const [selectedArticle, setSelectedArticle] = useState(null);
 
-    const renderArticleGrid = () => (
-        <div className="grid grid-cols-3 gap-4">
-            {filteredArticles.map((article) => (
-                <div key={article.id} className="bg-white rounded-lg shadow-lg overflow-hidden relative">
-                    <img
-                        src={article.Short_image}
-                        alt={article.Short_title}
-                        className="w-full h-48 object-cover"
-                    />
-                    <div className="p-4">
-                        <h3 className="text-xl font-semibold">{article.Short_title}</h3>
-                        <p className="text-sm text-gray-600 mt-2">{article.Short_content}</p>
-                    </div>
-                    <div
-                        className="absolute bottom-2 right-2 cursor-pointer"
-                        onClick={() => handleDelete(article.id)}
+    const handleArticleClick = (article) => {
+        setSelectedArticle(article);
+    };
+
+    const handleBackToList = () => {
+        setSelectedArticle(null);
+    };
+
+    const renderArticleDetail = () => {
+        if (!selectedArticle) return null;
+        
+        return (
+            <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+                <div className="flex justify-between items-center p-4 border-b">
+                    <h2 className="text-2xl font-bold text-[#151445]">{selectedArticle.Long_title || selectedArticle.Short_title}</h2>
+                    <button 
+                        onClick={handleBackToList}
+                        className="px-4 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition duration-200"
                     >
-                        <Delete />
+                        Back to List
+                    </button>
+                </div>
+                
+                {selectedArticle.Long_image && (
+                    <div className="relative w-full h-64 md:h-96 overflow-hidden">
+                        <img 
+                            src={selectedArticle.Long_image} 
+                            alt={selectedArticle.Long_title || selectedArticle.Short_title}
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                )}
+                
+                <div className="p-6">
+                    <div className="mb-6">
+                        <h3 className="text-xl font-semibold mb-2">Description</h3>
+                        {selectedArticle.Long_content ? (
+                            // <div dangerouslySetInnerHTML={{ __html: selectedArticle.Long_content }} />
+                            <ArticleContent content={selectedArticle.Long_content} />
+                        ) : (
+                            <ArticleContent content={selectedArticle.Short_content} />
+                        )}
+                    </div>
+                    
+                    {selectedArticle.tags && selectedArticle.tags.length > 0 && (
+                        <div className="mb-4">
+                            <h4 className="text-md font-medium mb-2">Tags</h4>
+                            <div className="flex flex-wrap gap-2">
+                                {selectedArticle.tags.map((tag, index) => (
+                                    <span key={index} className="px-3 py-1 bg-gray-100 rounded-full text-sm">
+                                        {tag}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                    
+                    <div className="text-sm text-gray-500 mt-8">
+                        {selectedArticle.author && (
+                            <p>Author: {selectedArticle.author.name || `ID: ${selectedArticle.authorId}`}</p>
+                        )}
+                        {selectedArticle.created_at && (
+                            <p>Published: {new Date(selectedArticle.created_at).toLocaleDateString()}</p>
+                        )}
                     </div>
                 </div>
-            ))}
-        </div>
-    );
+            </div>
+        );
+    };
+
+    const renderArticleGrid = () => {
+        if (filteredArticles.length === 0) {
+            return (
+                <div className="flex justify-center items-center h-64">
+                    <p className="text-gray-500">No articles found</p>
+                </div>
+            );
+        }
+        
+        return (
+            <div className="grid grid-cols-3 gap-4">
+                {filteredArticles.map((article) => (
+                    <div key={article.id} 
+                         className="bg-white rounded-lg shadow-lg overflow-hidden relative cursor-pointer"
+                         onClick={() => handleArticleClick(article)}>
+                        <img
+                            src={article.Short_image}
+                            alt={article.Short_title}
+                            className="w-full h-48 object-cover"
+                        />
+                        <div className="p-4">
+                            <h3 className="text-xl font-semibold">{article.Short_title}</h3>
+                            <p className="text-sm text-gray-600 mt-2">{article.Short_content}</p>
+                        </div>
+                        <div
+                            className="absolute bottom-2 right-2 cursor-pointer"
+                            onClick={(e) => {
+                                e.stopPropagation(); // Prevent triggering article click
+                                handleDelete(article.id);
+                            }}
+                        >
+                            <Delete />
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
+    };
 
 
-    const renderArticleList = () => (
-        <div className="flex flex-col gap-4">
-            {articles.map((article) => (
-                <Card
-                    key={article.id}
-                    profileImage={article.Short_image}
-                    name={article.Short_title}
-                    email={article.Short_content}
-                    userid={article.id}
-                />
-            ))}
-        </div>
-    );
+    const renderArticleList = () => {
+        if (filteredArticles.length === 0) {
+            return (
+                <div className="flex justify-center items-center h-64">
+                    <p className="text-gray-500">No articles found</p>
+                </div>
+            );
+        }
+        
+        return (
+            <div className="flex flex-col gap-4 overflow-y-auto">
+                {filteredArticles.map((article) => {
+                    // Limit to approximately 2 lines
+                    const maxLength = 120;
+                    const truncatedContent = article.Short_content.length > maxLength
+                        ? article.Short_content.substring(0, maxLength) + '...'
+                        : article.Short_content;
+                    
+                    return (
+                        <div key={article.id} 
+                             onClick={() => handleArticleClick(article)}
+                             className="cursor-pointer">
+                            <Card
+                                profileImage={article.Short_image}
+                                name={article.Short_title}
+                                userid={article.id}
+                            />
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    };
 
     return (
         <div className="bg-custom-light">
-            <div className="absolute left-2 right-2 top-2 bottom-4  rounded-2xl h-[98vh] ml-64">
+            <div className="absolute left-2 right-2 top-2 bottom-4 rounded-2xl h-[98vh] ml-64">
                 <div className="text-3xl font-semibold mt-8 ml-6">
                     <p>
                         <span className="text-custom-orange">Article</span>
                         <span className="text-[#151445]"> Submission</span>
                     </p>
                 </div>
-
+    
                 <div className="absolute flex justify-between w-full mt-4 px-6">
                     <div className="flex items-center">
-                        {!uiState.showAddArticle && (
+                        {!uiState.showAddArticle && !selectedArticle && (
                             <div className="relative">
-                                <Search image={<SearchIcon className="w-3 h-3 text-gray-400" />} className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-custom-orange w-64" type="text" size={20} placeholder="Search articles..." value={uiState.searchQuery} onChange={(e) => handleSearch(e.target.value)} />
+                                <Search image={<SearchIcon className="w-3 h-3 text-gray-400" />} 
+                                        className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-custom-orange w-64" 
+                                        type="text" 
+                                        size={20} 
+                                        placeholder="Search articles..." 
+                                        value={uiState.searchQuery} 
+                                        onChange={(e) => handleSearch(e.target.value)} />
                             </div>
                         )}
                     </div>
                     
                     <div className="flex items-center gap-3">
-                        {!uiState.showAddArticle && (
+                        {!uiState.showAddArticle && !selectedArticle && (
                             <Button
                                 variant="custom"
                                 text={uiState.viewMode === "grid" ? <ListFillter /> : <Grid />}
@@ -509,25 +635,30 @@ export const ArticlePage = () => {
                                 onClick={toggleViewMode}
                             />
                         )}
-                        <Button
-                            variant="primary"
-                            text={uiState.showAddArticle ? "Close Add Article" : "Add Article"}
-                            size="md"
-                            onClick={toggleAddArticle}
-                        />
+                        
+                        {!selectedArticle && (
+                            <Button
+                                variant="primary"
+                                text={uiState.showAddArticle ? "Close Add Article" : "Add Article"}
+                                size="md"
+                                onClick={toggleAddArticle}
+                            />
+                        )}
                     </div>
                 </div>
-
-                {uiState.showAddArticle ? renderArticleForm() : (
+    
+                {selectedArticle ? (
                     <div className="mt-20 mx-6 h-[75vh] overflow-y-auto">
-                        {uiState.viewMode === "grid" ? renderArticleGrid() : renderArticleList()}
+                        {renderArticleDetail()}
                     </div>
-                )}
-
-                {uiState.message && (
-                    <p className="text-center mt-4 text-red-600">{uiState.message}</p>
+                ) : (
+                    uiState.showAddArticle ? renderArticleForm() : (
+                        <div className="mt-20 mx-6 h-[75vh] overflow-y-auto">
+                            {uiState.viewMode === "grid" ? renderArticleGrid() : renderArticleList()}
+                        </div>
+                    )
                 )}
             </div>
         </div>
     );
-};
+}

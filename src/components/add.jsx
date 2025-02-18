@@ -16,7 +16,9 @@ export function Add({ name, role, onClose, fetch }) {
         setData({ ...data, [e.target.name]: e.target.value });
     };
 
-    const handleRegister = async () => {
+    const handleRegister = async (e) => {
+        if (e) e.preventDefault(); // Prevent default form submission
+
         if (!data.name || !data.email || !data.password) {
             setMessage("All fields are required!");
             return;
@@ -67,33 +69,34 @@ export function Add({ name, role, onClose, fetch }) {
 
             {message && <p className="text-sm text-center mt-2 text-red-500">{message}</p>}
 
-            <div className="mt-6 space-y-4">
-                <div>
-                    <label className="block text-sm text-gray-600">Full Name</label>
-                    <input type="text" name="name" placeholder="Enter full name"
-                        className="mt-1 w-full rounded-xl p-3 focus:outline-custom-orange"
-                        value={data.name} onChange={handleChange} />
+            <form onSubmit={handleRegister}>
+                <div className="mt-6 space-y-4">
+                    <div>
+                        <label className="block text-sm text-gray-600">Full Name</label>
+                        <input type="text" name="name" placeholder="Enter full name"
+                            className="mt-1 w-full rounded-xl p-3 focus:outline-custom-orange"
+                            value={data.name} onChange={handleChange} />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm text-gray-600">Email</label>
+                        <input type="email" name="email" placeholder="Enter email address"
+                            className="mt-1 w-full rounded-xl p-3 focus:outline-custom-orange"
+                            value={data.email} onChange={handleChange} />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm text-gray-600">Password</label>
+                        <input type="password" name="password" placeholder="Enter password"
+                            className="mt-1 w-full rounded-xl p-3 focus:outline-custom-orange"
+                            value={data.password} onChange={handleChange} />
+                    </div>
                 </div>
 
-                <div>
-                    <label className="block text-sm text-gray-600">Email</label>
-                    <input type="email" name="email" placeholder="Enter email address"
-                        className="mt-1 w-full rounded-xl p-3 focus:outline-custom-orange"
-                        value={data.email} onChange={handleChange} />
+                <div className="flex justify-center mt-6">
+                    <button type="submit" className="w-full py-3 rounded-xl bg-custom-orange text-white font-medium transition duration-300 hover:bg-[#ff9a66]">Register</button>
                 </div>
-
-                <div>
-                    <label className="block text-sm text-gray-600">Password</label>
-                    <input type="password" name="password" placeholder="Enter password"
-                        className="mt-1 w-full rounded-xl p-3 focus:outline-custom-orange"
-                        value={data.password} onChange={handleChange} />
-                </div>
-            </div>
-
-            <div className="flex justify-center mt-6">
-                <button type="button" className="w-full py-3 rounded-xl bg-custom-orange text-white font-medium transition duration-300 hover:bg-[#ff9a66]"
-                    onClick={handleRegister}>Register</button>
-            </div>
+            </form>
 
             <div className="flex justify-center mt-3">
                 <button className="text-gray-500 text-sm" onClick={onClose}>Cancel</button>
