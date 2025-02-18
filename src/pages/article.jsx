@@ -4,12 +4,16 @@ import { Button } from "../components/button";
 import { WordCounter } from "../components/counter";
 import { Delete } from "../icons/delete";
 import { Card } from "../components/card";
-import { List } from "../icons/list";
+import { ListFillter } from "../icons/list";
 import { Grid } from "../icons/grid";
 import { BACKEND_URL } from "../Url";
 import { useCallback } from "react";
 import { Search } from "../components/search";
 import { SearchIcon } from "../icons/search";
+import EditorJS from '@editorjs/editorjs';
+import Header from '@editorjs/header';
+import List from '@editorjs/list';
+import Paragraph from '@editorjs/paragraph';
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; 
 const ALLOWED_FILE_TYPES = ["image/jpeg", "image/png", "image/jpg"];
@@ -41,8 +45,47 @@ export const ArticlePage = () => {
     const [filteredArticles, setFilteredArticles] = useState([]);
     const fileInputRef = useRef(null);
     const longFileInputRef = useRef(null);
+    const editorRef = useRef(null);
+    const editorInstance = useRef(null);
     const token = localStorage.getItem("authToken");
     const [categories, setCategories] = useState([]);
+
+    // Initialize Editor.js
+    useEffect(() => {
+        if (uiState.showAddArticle && editorRef.current && !editorInstance.current) {
+            const editor = new EditorJS({
+                holder: editorRef.current,
+                tools: {
+                    header: {
+                        class: Header,
+                        inlineToolbar: ['link']
+                    },
+                    list: {
+                        class: List,
+                        inlineToolbar: true
+                    },
+                    paragraph: {
+                        class: Paragraph,
+                        inlineToolbar: true
+                    }
+                },
+                data: articleForm.longDescription ? JSON.parse(articleForm.longDescription) : {},
+                onChange: async () => {
+                    const savedData = await editorInstance.current.save();
+                    handleFormChange("longDescription", JSON.stringify(savedData));
+                }
+            });
+
+            editorInstance.current = editor;
+        }
+
+        return () => {
+            if (editorInstance.current) {
+                editorInstance.current.destroy();
+                editorInstance.current = null;
+            }
+        };
+    }, [uiState.showAddArticle]);
 
     async function fetchCategories() {
         try {
@@ -219,6 +262,11 @@ export const ArticlePage = () => {
             categoryId: "",
             tags: []
         });
+
+        // Reset Editor.js content
+        if (editorInstance.current) {
+            editorInstance.current.clear();
+        }
     };
 
     const toggleAddArticle = () => {
@@ -334,11 +382,9 @@ export const ArticlePage = () => {
 
                 <div>
                     <label className="text-black">Long Description</label>
-                    <WordCounter
-                        className="bg-gray-300 h-44 w-full rounded-lg p-2 focus:outline-custom-orange"
-                        placeholder="Enter long description"
-                        value={articleForm.longDescription}
-                        onChange={(e) => handleFormChange("longDescription", e.target.value)}
+                    <div 
+                        className="bg-gray-100 min-h-44 w-full rounded-lg p-2 shadow-inner border"
+                        ref={editorRef}
                     />
                 </div>
 
@@ -437,7 +483,7 @@ export const ArticlePage = () => {
 
     return (
         <div className="bg-custom-light">
-            <div className="absolute left-2 right-2 top-2 bottom-4 bg-[#F8F8F8] rounded-2xl h-[98vh] shadow-md ml-64">
+            <div className="absolute left-2 right-2 top-2 bottom-4  rounded-2xl h-[98vh] ml-64">
                 <div className="text-3xl font-semibold mt-8 ml-6">
                     <p>
                         <span className="text-custom-orange">Article</span>
@@ -458,7 +504,7 @@ export const ArticlePage = () => {
                         {!uiState.showAddArticle && (
                             <Button
                                 variant="custom"
-                                text={uiState.viewMode === "grid" ? <List /> : <Grid />}
+                                text={uiState.viewMode === "grid" ? <ListFillter /> : <Grid />}
                                 size="md"
                                 onClick={toggleViewMode}
                             />
