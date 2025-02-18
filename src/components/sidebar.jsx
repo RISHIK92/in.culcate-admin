@@ -11,7 +11,7 @@ import { Creator } from "../icons/creator";
 import { BACKEND_URL } from "../Url";
 
 export function Sidebar({ activeItem, setActiveItem }) {
-    const [adminName, setAdminName] = useState("Agnik Misra");
+    const [adminName, setAdminName] = useState("User not found");
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
