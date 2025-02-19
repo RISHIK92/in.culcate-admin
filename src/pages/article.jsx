@@ -70,76 +70,44 @@ export const ArticlePage = () => {
 
     // Initialize Editor.js
     useEffect(() => {
-        let editor = null;
-
-        const initializeEditor = async () => {
-            if (uiState.showAddArticle && editorRef.current && !editorInstance.current) {
-                console.log('Initializing Editor.js...'); // Debug log
-                
-                try {
-                    let initialData = {};
-                    if (articleForm.longDescription) {
-                        try {
-                            initialData = JSON.parse(articleForm.longDescription);
-                        } catch (e) {
-                            // If the content is plain text, wrap it in a paragraph block
-                            initialData = {
-                                blocks: [
-                                    {
-                                        type: 'paragraph',
-                                        data: {
-                                            text: articleForm.longDescription
-                                        }
-                                    }
-                                ]
-                            };
-                        }
+        if (uiState.showAddArticle && editorRef.current && !editorInstance.current) {
+            const editor = new EditorJS({
+                holder: editorRef.current,
+                tools: {
+                    header: {
+                        class: Header,
+                        inlineToolbar: ['link']
+                    },
+                    list: {
+                        class: List,
+                        inlineToolbar: true
+                    },
+                    paragraph: {
+                        class: Paragraph,
+                        inlineToolbar: true
                     }
-
-                    editor = new EditorJS({
-                        holder: editorRef.current,
-                        tools: {
-                            header: Header,
-                            list: List,
-                            paragraph: Paragraph
-                        },
-                        data: initialData,
-                        placeholder: 'Enter your content here...',
-                        onChange: async () => {
-                            try {
-                                if (editor) {
-                                    const savedData = await editor.save();
-                                    handleFormChange("longDescription", JSON.stringify(savedData));
-                                }
-                            } catch (error) {
-                                console.error("Error saving editor data:", error);
-                            }
-                        },
-                        autofocus: true,
-                        minHeight: 200
-                    });
-
-                    // Wait for editor initialization
-                    await editor.isReady;
-                    console.log('Editor.js initialized successfully'); // Debug log
-                    editorInstance.current = editor;
-                } catch (error) {
-                    console.error("Editor initialization error:", error);
+                },
+                data: articleForm.longDescription ? JSON.parse(articleForm.longDescription) : {},
+                onChange: async () => {
+                    try {
+                        const savedData = await editorInstance.current.save();
+                        handleFormChange("longDescription", JSON.stringify(savedData));
+                    } catch (error) {
+                        console.error("Error saving editor data:", error);
+                    }
                 }
-            }
-        };
+            });
 
-        initializeEditor();
+            editorInstance.current = editor;
+        }
 
-        // Cleanup function
         return () => {
-            if (editor && typeof editor.destroy === 'function') {
-                console.log('Destroying Editor.js instance'); // Debug log
-                editor.destroy();
+            if (editorInstance.current) {
+                editorInstance.current.destroy();
                 editorInstance.current = null;
             }
         };
-    }, [uiState.showAddArticle, articleForm.longDescription]);
+    }, [uiState.showAddArticle]);
 
     const fetchCategories = useCallback(async () => {
         try {
@@ -367,12 +335,6 @@ export const ArticlePage = () => {
             const newShowAddArticle = !prev.showAddArticle;
             if (newShowAddArticle) {
                 fetchCategories();
-            } else {
-                // Ensure editor instance is properly cleaned up
-                if (editorInstance.current && typeof editorInstance.current.destroy === 'function') {
-                    editorInstance.current.destroy();
-                    editorInstance.current = null;
-                }
             }
             return {
                 ...prev,
@@ -837,7 +799,7 @@ const renderArticleForm = () => (
                         {!selectedArticle && (
                             <Button
                                 variant="primary"
-                                text={uiState.showAddArticle ? "Close" : "Add Article"}
+                                text={uiState.showAddArticle ? "Close Add Article" : "Add Article"}
                                 size="md"
                                 onClick={toggleAddArticle}
                             />
