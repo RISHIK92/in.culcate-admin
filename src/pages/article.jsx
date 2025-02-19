@@ -502,7 +502,7 @@ const renderArticleForm = () => (
                             className="h-full w-full rounded-xl object-cover"
                         />
                     ) : (
-                        <p className="text-black">Upload Short Image</p>
+                        <p className="text-black">Short Image</p>
                     )}
                 </div>
                 <input
@@ -527,7 +527,7 @@ const renderArticleForm = () => (
                             className="h-full w-full rounded-xl object-cover"
                         />
                     ) : (
-                        <p className="text-black">Upload Long Image</p>
+                        <p className="text-black">Long Image</p>
                     )}
                 </div>
                 <input
@@ -799,7 +799,7 @@ const renderArticleForm = () => (
                         {!selectedArticle && (
                             <Button
                                 variant="primary"
-                                text={uiState.showAddArticle ? "Close Add Article" : "Add Article"}
+                                text={uiState.showAddArticle ? "Close" : "Add Article"}
                                 size="md"
                                 onClick={toggleAddArticle}
                             />

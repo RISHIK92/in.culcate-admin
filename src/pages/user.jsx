@@ -54,7 +54,7 @@ export function UserPage() {
                 <div className="text-2xl font-semibold mt-12">
                     <div className="flex justify-between">
                         <p className="ml-6">
-                            <span className="text-[#151445]">User List</span>
+                            <span className="text-[#151445]">Consumer List</span>
                         </p>
                         <Button variant="primary" text={showAddUser ? "Close" : "Add User"} size="custom" onClick={() => setShowAddUser(prev => !prev)} />
                     </div>
