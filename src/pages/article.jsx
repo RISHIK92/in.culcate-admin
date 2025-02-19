@@ -618,7 +618,7 @@ export const ArticlePage = () => {
                 <div className="bottom-4 flex justify-end mt-2">
                     <Button
                         variant="primary"
-                        text={uiState.uploading ? "Saving..." : "Article"}
+                        text={uiState.uploading ? "Saving..." : "Save"}
                         size="md"
                         onClick={handleSubmit}
                         disabled={uiState.uploading}
