@@ -70,44 +70,59 @@ export const ArticlePage = () => {
 
     // Initialize Editor.js
     useEffect(() => {
-        if (uiState.showAddArticle && editorRef.current && !editorInstance.current) {
-            const editor = new EditorJS({
-                holder: editorRef.current,
-                tools: {
-                    header: {
-                        class: Header,
-                        inlineToolbar: ['link']
-                    },
-                    list: {
-                        class: List,
-                        inlineToolbar: true
-                    },
-                    paragraph: {
-                        class: Paragraph,
-                        inlineToolbar: true
-                    }
-                },
-                data: articleForm.longDescription ? JSON.parse(articleForm.longDescription) : {},
-                onChange: async () => {
-                    try {
-                        const savedData = await editorInstance.current.save();
-                        handleFormChange("longDescription", JSON.stringify(savedData));
-                    } catch (error) {
-                        console.error("Error saving editor data:", error);
-                    }
+        let editor = null;
+
+        const initializeEditor = async () => {
+            if (uiState.showAddArticle && editorRef.current && !editorInstance.current) {
+                try {
+                    editor = new EditorJS({
+                        holder: editorRef.current,
+                        tools: {
+                            header: {
+                                class: Header,
+                                inlineToolbar: ['link']
+                            },
+                            list: {
+                                class: List,
+                                inlineToolbar: true
+                            },
+                            paragraph: {
+                                class: Paragraph,
+                                inlineToolbar: true
+                            }
+                        },
+                        data: articleForm.longDescription ? JSON.parse(articleForm.longDescription) : {},
+                        onChange: async () => {
+                            try {
+                                if (editor) {
+                                    const savedData = await editor.save();
+                                    handleFormChange("longDescription", JSON.stringify(savedData));
+                                }
+                            } catch (error) {
+                                console.error("Error saving editor data:", error);
+                            }
+                        }
+                    });
+
+                    // Wait for editor initialization
+                    await editor.isReady;
+                    editorInstance.current = editor;
+                } catch (error) {
+                    console.error("Editor initialization error:", error);
                 }
-            });
+            }
+        };
 
-            editorInstance.current = editor;
-        }
+        initializeEditor();
 
+        // Cleanup function
         return () => {
-            if (editorInstance.current) {
-                editorInstance.current.destroy();
+            if (editor && typeof editor.destroy === 'function') {
+                editor.destroy();
                 editorInstance.current = null;
             }
         };
-    }, [uiState.showAddArticle]);
+    }, [uiState.showAddArticle, articleForm.longDescription]);
 
     const fetchCategories = useCallback(async () => {
         try {
@@ -335,6 +350,12 @@ export const ArticlePage = () => {
             const newShowAddArticle = !prev.showAddArticle;
             if (newShowAddArticle) {
                 fetchCategories();
+            } else {
+                // Ensure editor instance is properly cleaned up
+                if (editorInstance.current && typeof editorInstance.current.destroy === 'function') {
+                    editorInstance.current.destroy();
+                    editorInstance.current = null;
+                }
             }
             return {
                 ...prev,
@@ -502,7 +523,7 @@ const renderArticleForm = () => (
                             className="h-full w-full rounded-xl object-cover"
                         />
                     ) : (
-                        <p className="text-black">Short Image</p>
+                        <p className="text-black">Select Short Image</p>
                     )}
                 </div>
                 <input
@@ -527,7 +548,7 @@ const renderArticleForm = () => (
                             className="h-full w-full rounded-xl object-cover"
                         />
                     ) : (
-                        <p className="text-black">Long Image</p>
+                        <p className="text-black">Select Long Image</p>
                     )}
                 </div>
                 <input
@@ -799,7 +820,7 @@ const renderArticleForm = () => (
                         {!selectedArticle && (
                             <Button
                                 variant="primary"
-                                text={uiState.showAddArticle ? "Close Add Article" : "Add Article"}
+                                text={uiState.showAddArticle ? "Close" : "Add Article"}
                                 size="md"
                                 onClick={toggleAddArticle}
                             />
