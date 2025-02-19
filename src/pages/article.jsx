@@ -633,7 +633,7 @@ const renderArticleForm = () => (
             <div className="bottom-4 flex justify-end mt-2">
                 <Button
                     variant="primary"
-                    text={uiState.uploading ? <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-custom-orange border-opacity-50"></div> : "Save Article"}
+                    text={uiState.uploading ? <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-white border-opacity-50"></div> : "Save Article"}
                     size="md"
                     onClick={handleSubmit}
                     disabled={uiState.uploading}
