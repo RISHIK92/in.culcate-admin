@@ -297,6 +297,7 @@ export const ArticlePage = () => {
         if (!confirmDelete) return;
 
         try {
+            setLoading(true);
             await axios.delete(`${BACKEND_URL}article/delete_article/${articleId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -305,6 +306,10 @@ export const ArticlePage = () => {
         } catch (error) {
             console.error("Delete error:", error);
             showMessage("Error deleting article.");
+        } finally {
+            setTimeout(() => {
+                setLoading(false);
+            }, 1500);
         }
     };
 
@@ -323,7 +328,7 @@ export const ArticlePage = () => {
         
         setFilteredArticles(searchResults);
         setCurrentPage(1);
-    }, [articles]);
+    });
 
     const toggleAddArticle = useCallback(() => {
         setUiState(prev => {
@@ -482,151 +487,162 @@ export const ArticlePage = () => {
         return pageNumbers;
     };
 
-    const renderArticleForm = () => (
-        <div className="mt-6">
-            <div className="flex flex-col md:flex-row md:justify-center gap-4 px-4 md:px-0">
-                <div className="flex justify-center mt-4 md:mx-8">
-                    <div
-                        onClick={() => fileInputRef.current?.click()}
-                        className="h-40 w-full max-w-xs md:w-80 bg-gray-300 rounded-xl opacity-40 flex flex-col justify-center items-center cursor-pointer relative"
-                    >
-                        {articleForm.imageSrc ? (
-                            <img
-                                src={articleForm.imageSrc}
-                                alt="Preview"
-                                className="h-full w-full rounded-xl object-cover"
-                            />
-                        ) : (
-                            <p className="text-black">Upload Short Image</p>
-                        )}
-                    </div>
-                    <input
-                        ref={fileInputRef}
-                        type="file"
-                        className="hidden"
-                        onChange={handleFileSelect}
-                        accept="image/*"
-                    />
+const renderArticleForm = () => (
+    <div className="mt-6">
+        <div className="flex flex-col md:flex-row md:justify-center gap-4 px-4 md:px-0">
+            <div className="flex justify-center mt-4 md:mx-8">
+                <div
+                    onClick={() => !uiState.uploading && fileInputRef.current?.click()}
+                    className={`h-40 w-full max-w-xs md:w-80 bg-gray-300 rounded-xl ${uiState.uploading ? "opacity-20 cursor-not-allowed" : "opacity-40 cursor-pointer"} flex flex-col justify-center items-center relative`}
+                >
+                    {articleForm.imageSrc ? (
+                        <img
+                            src={articleForm.imageSrc}
+                            alt="Preview"
+                            className="h-full w-full rounded-xl object-cover"
+                        />
+                    ) : (
+                        <p className="text-black">Upload Short Image</p>
+                    )}
                 </div>
-
-                <div className="flex justify-center mt-4">
-                    <div
-                        onClick={() => longFileInputRef.current?.click()}
-                        className="h-40 w-full max-w-xs md:w-80 bg-gray-300 rounded-xl opacity-40 flex flex-col justify-center items-center cursor-pointer relative"
-                    >
-                        {articleForm.longImageSrc ? (
-                            <img
-                                src={articleForm.longImageSrc}
-                                alt="Long Preview"
-                                className="h-full w-full rounded-xl object-cover"
-                            />
-                        ) : (
-                            <p className="text-black">Upload Long Image</p>
-                        )}
-                    </div>
-                    <input
-                        ref={longFileInputRef}
-                        type="file"
-                        className="hidden"
-                        onChange={handleLongFileSelect}
-                        accept="image/*"
-                    />
-                </div>
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    className="hidden"
+                    onChange={handleFileSelect}
+                    accept="image/*"
+                    disabled={uiState.uploading}
+                />
             </div>
 
-            <div className="space-y-4 mx-4 md:mx-8 mt-4">
-                <div>
-                    <label className="text-black">Short Title</label>
-                    <input
+            <div className="flex justify-center mt-4">
+                <div
+                    onClick={() => !uiState.uploading && longFileInputRef.current?.click()}
+                    className={`h-40 w-full max-w-xs md:w-80 bg-gray-300 rounded-xl ${uiState.uploading ? "opacity-20 cursor-not-allowed" : "opacity-40 cursor-pointer"} flex flex-col justify-center items-center relative`}
+                >
+                    {articleForm.longImageSrc ? (
+                        <img
+                            src={articleForm.longImageSrc}
+                            alt="Long Preview"
+                            className="h-full w-full rounded-xl object-cover"
+                        />
+                    ) : (
+                        <p className="text-black">Upload Long Image</p>
+                    )}
+                </div>
+                <input
+                    ref={longFileInputRef}
+                    type="file"
+                    className="hidden"
+                    onChange={handleLongFileSelect}
+                    accept="image/*"
+                    disabled={uiState.uploading}
+                />
+            </div>
+        </div>
+
+        <div className="space-y-4 mx-4 md:mx-8 mt-4">
+            <div>
+                <label className="text-black">Short Title</label>
+                <input
+                    className="bg-gray-300 h-10 w-full rounded-lg px-3 focus:outline-custom-orange"
+                    placeholder="Enter short title"
+                    value={articleForm.shortTitle}
+                    onChange={(e) => handleFormChange("shortTitle", e.target.value)}
+                    disabled={uiState.uploading}
+                />
+            </div>
+
+            <div>
+                <label className="text-black">Short Description</label>
+                <WordCounter
+                    className="bg-gray-300 h-20 w-full rounded-lg p-2 focus:outline-custom-orange"
+                    placeholder="Enter short description"
+                    value={articleForm.shortDescription}
+                    onChange={(e) => handleFormChange("shortDescription", e.target.value)}
+                    disabled={uiState.uploading}
+                />
+            </div>
+
+            <div>
+                <label className="text-black">Long Title</label>
+                <input 
+                    className="bg-gray-300 h-10 w-full rounded-lg px-3 focus:outline-custom-orange"
+                    placeholder="Enter long title"
+                    value={articleForm.longTitle}
+                    onChange={(e) => handleFormChange("longTitle", e.target.value)}
+                    disabled={uiState.uploading}
+                />
+            </div>
+
+            <div>
+                <label className="text-black">Long Description</label>
+                <div 
+                    className="bg-gray-100 min-h-44 w-full rounded-lg p-2 shadow-inner border"
+                    ref={editorRef}
+                />
+            </div>
+
+            {/* <div>
+                <label className="text-black">Long Description</label>
+                <div 
+                    className={`bg-gray-100 min-h-44 w-full focus:outline-custom-orange rounded-lg p-2 shadow-inner border ${
+                        uiState.uploading ? "opacity-50 pointer-events-none" : ""
+                    }`}
+                    ref={editorRef}
+                    contentEditable={!uiState.uploading}
+                />
+            </div> */}
+
+            <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
+                <div className="w-full md:w-1/2">
+                    <label className="text-black">Category</label>
+                    <select
                         className="bg-gray-300 h-10 w-full rounded-lg px-3 focus:outline-custom-orange"
-                        placeholder="Enter short title"
-                        value={articleForm.shortTitle}
-                        onChange={(e) => handleFormChange("shortTitle", e.target.value)}
-                    />
-                </div>
-
-                <div>
-                    <label className="text-black">Short Description</label>
-                    <WordCounter
-                        className="bg-gray-300 h-20 w-full rounded-lg p-2 focus:outline-custom-orange"
-                        placeholder="Enter short description"
-                        value={articleForm.shortDescription}
-                        onChange={(e) => handleFormChange("shortDescription", e.target.value)}
-                    />
-                </div>
-                <div>
-                    <label className="text-black">Long Title</label>
-                    <input
-                        className="bg-gray-300 h-10 w-full rounded-lg px-3 focus:outline-custom-orange"
-                        placeholder="Enter long title"
-                        value={articleForm.longTitle}
-                        onChange={(e) => handleFormChange("longTitle", e.target.value)}
-                    />
-                </div>
-
-                <div>
-                    <label className="text-black">Long Description</label>
-                    <div 
-                        className="bg-gray-100 min-h-44 w-full rounded-lg p-2 shadow-inner border"
-                        ref={editorRef}
-                    />
-                </div>
-
-                {/* <div>
-                    <label className="text-black">Author ID</label>
-                    <input
-                        className="bg-gray-300 h-10 w-full rounded-lg px-3 focus:outline-custom-orange cursor-not-allowed"
-                        value={id}
-                        disabled
-                    />
-                </div> */}
-
-                <div className="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0">
-                    <div className="w-full md:w-1/2">
-                        <label className="text-black">Category</label>
-                        <select
-                            className="bg-gray-300 h-10 w-full rounded-lg px-3 focus:outline-custom-orange"
-                            value={articleForm.categoryId}
-                            onChange={(e) => handleFormChange("categoryId", e.target.value)}
-                        >
-                            <option value="">Select Category</option>
-                            {categories.map((category) => (
-                                <option key={category.id} value={category.id}>
-                                    {category.name}
-                                </option>
-                            ))}
-                        </select>
+                        value={articleForm.categoryId}
+                        onChange={(e) => handleFormChange("categoryId", e.target.value)}
+                        disabled={uiState.uploading}
+                    >
+                        <option value="">Select Category</option>
+                        {categories.map((category) => (
+                            <option key={category.id} value={category.id}>
+                                {category.name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 <div className="w-1/2">
-                        <label className="text-black">Tags (comma-separated)</label>
-                        <input
-                            className="bg-gray-300 h-10 w-full rounded-lg px-3 focus:outline-custom-orange"
-                            placeholder="e.g. tech, science"
-                            value={articleForm.tags.join(", ")}
-                            onChange={(e) =>
-                                handleFormChange("tags", e.target.value.split(",").map(tag => tag.trim()))
-                            }
-                        />
-                    </div>
-                </div>
-
-                {uiState.message && (
-                    <p className="text-center text-red-600">{uiState.message}</p>
-                )}
-                
-                <div className="bottom-4 flex justify-end mt-2">
-                    <Button
-                        variant="primary"
-                        text={uiState.uploading ? "Saving..." : "Save Article"}
-                        size="md"
-                        onClick={handleSubmit}
+                    <label className="text-black">Tags (comma-separated)</label>
+                    <input
+                        className="bg-gray-300 h-10 w-full rounded-lg px-3 focus:outline-custom-orange"
+                        placeholder="e.g. tech, science"
+                        value={articleForm.tags.join(", ")}
+                        onChange={(e) =>
+                            handleFormChange("tags", e.target.value.split(",").map(tag => tag.trim()))
+                        }
                         disabled={uiState.uploading}
                     />
                 </div>
             </div>
+
+            {uiState.message && (
+                <p className="text-center text-red-600">{uiState.message}</p>
+            )}
+
+            <div className="bottom-4 flex justify-end mt-2">
+                <Button
+                    variant="primary"
+                    text={uiState.uploading ? <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-custom-orange border-opacity-50"></div> : "Save Article"}
+                    size="md"
+                    onClick={handleSubmit}
+                    disabled={uiState.uploading}
+                />
+            </div>
         </div>
-    );
+    </div>
+);
+
 
     const renderArticleDetail = () => {
         if (!selectedArticle) return null;

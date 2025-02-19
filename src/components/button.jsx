@@ -15,5 +15,19 @@ const sizeStyles = {
 
 
 export const Button = (props) => {
-    return <button onClick={props.onClick} className={`${variantStyles[props.variant]} ${sizeStyles[props.size]} ${props.fullWidth ? "w-full flex justify-center items-center": null} disabled=${props.loading} font-light`}> <div className="flex"> {props.startIcon ? <div className="pr-2">{props.startIcon}</div> : null} {props.text} {props.endIcon ? <div className="pl-2">{props.endIcon}</div>: null} </div></button>
-}
+    return (
+      <button
+        onClick={props.onClick}
+        className={`${variantStyles[props.variant]} ${sizeStyles[props.size]} ${
+          props.fullWidth ? "w-full flex justify-center items-center" : ""
+        } disabled={props.loading} font-light`}
+      >
+        <div className="flex">
+          {props.startIcon && <div className="pr-2">{props.startIcon}</div>}
+          {props.text}
+          {props.endIcon && <div className="pl-2">{props.endIcon}</div>}
+        </div>
+      </button>
+    );
+  };
+  
