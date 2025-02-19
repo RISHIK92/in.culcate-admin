@@ -74,24 +74,37 @@ export const ArticlePage = () => {
 
         const initializeEditor = async () => {
             if (uiState.showAddArticle && editorRef.current && !editorInstance.current) {
+                console.log('Initializing Editor.js...'); // Debug log
+                
                 try {
+                    let initialData = {};
+                    if (articleForm.longDescription) {
+                        try {
+                            initialData = JSON.parse(articleForm.longDescription);
+                        } catch (e) {
+                            // If the content is plain text, wrap it in a paragraph block
+                            initialData = {
+                                blocks: [
+                                    {
+                                        type: 'paragraph',
+                                        data: {
+                                            text: articleForm.longDescription
+                                        }
+                                    }
+                                ]
+                            };
+                        }
+                    }
+
                     editor = new EditorJS({
                         holder: editorRef.current,
                         tools: {
-                            header: {
-                                class: Header,
-                                inlineToolbar: ['link']
-                            },
-                            list: {
-                                class: List,
-                                inlineToolbar: true
-                            },
-                            paragraph: {
-                                class: Paragraph,
-                                inlineToolbar: true
-                            }
+                            header: Header,
+                            list: List,
+                            paragraph: Paragraph
                         },
-                        data: articleForm.longDescription ? JSON.parse(articleForm.longDescription) : {},
+                        data: initialData,
+                        placeholder: 'Enter your content here...',
                         onChange: async () => {
                             try {
                                 if (editor) {
@@ -101,11 +114,14 @@ export const ArticlePage = () => {
                             } catch (error) {
                                 console.error("Error saving editor data:", error);
                             }
-                        }
+                        },
+                        autofocus: true,
+                        minHeight: 200
                     });
 
                     // Wait for editor initialization
                     await editor.isReady;
+                    console.log('Editor.js initialized successfully'); // Debug log
                     editorInstance.current = editor;
                 } catch (error) {
                     console.error("Editor initialization error:", error);
@@ -118,6 +134,7 @@ export const ArticlePage = () => {
         // Cleanup function
         return () => {
             if (editor && typeof editor.destroy === 'function') {
+                console.log('Destroying Editor.js instance'); // Debug log
                 editor.destroy();
                 editorInstance.current = null;
             }
